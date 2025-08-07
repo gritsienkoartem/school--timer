@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Обратный отсчёт до 1 сентября</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    #countdown {
+      font-size: 1.8rem;
+      background: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>До 1 сентября осталось:</h1>
+  <div id="countdown">Загрузка...</div>
+
+  <!-- Звук -->
+  <audio id="tick-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+
+  <script>
+    const countdownEl = document.getElementById('countdown');
+    const tickSound = document.getElementById('tick-sound');
+
+    function plural(n, one, few, many) {
+      const mod10 = n % 10;
+      const mod100 = n % 100;
+
+      if (mod10 === 1 && mod100 !== 11) return one;
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+      return many;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const targetDate = new Date(currentYear, 8, 1); // 1 сентября
+
+      if (now > targetDate) {
+        targetDate.setFullYear(currentYear + 1);
+      }
+
+      const totalSeconds = Math.floor((targetDate - now) / 1000);
+
+      const weeks = Math.floor(totalSeconds / (7 * 24 * 3600));
+      const days = Math.floor((totalSeconds % (7 * 24 * 3600)) / (24 * 3600));
+      const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      // Склонения
+      const weeksText = `${weeks} ${plural(weeks, 'неделя', 'недели', 'недель')}`;
+      const daysText = `${days} ${plural(days, 'день', 'дня', 'дней')}`;
+      const hoursText = `${hours} ${plural(hours, 'час', 'часа', 'часов')}`;
+      const minutesText = `${minutes} ${plural(minutes, 'минута', 'минуты', 'минут')}`;
+      const secondsText = `${seconds} ${plural(seconds, 'секунда', 'секунды', 'секунд')}`;
+
+      countdownEl.innerHTML = `${weeksText}, ${daysText}, ${hoursText}, ${minutesText}, ${secondsText}`;
+
+      tickSound.currentTime = 0;
+      tickSound.play();
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
